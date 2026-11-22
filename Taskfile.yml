@@ -1,0 +1,48 @@
+version: "3"
+
+tasks:
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  lint-fix:
+    desc: Run golangci-lint with auto-fixes
+    cmds:
+      - golangci-lint run --fix ./...
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -race ./...
+
+  bench:
+    desc: Run benchmarks (use BENCH to filter, COUNT to repeat)
+    vars:
+      BENCH: '{{default "." .BENCH}}'
+      COUNT: '{{default "1" .COUNT}}'
+    cmds:
+      - go test -run='^$' -bench='{{.BENCH}}' -benchmem -count={{.COUNT}} ./...
+
+  fuzz:
+    desc: Run fuzz tests (default 30s per test, use FUZZ_TIME to override)
+    vars:
+      FUZZ_TIME: '{{default "30s" .FUZZ_TIME}}'
+    cmds:
+      - |
+        exit_code=0
+        targets=(
+          "FuzzSlugifyQueryWords"
+          "FuzzNormalizeOrdinalsEquivalence"
+          "FuzzStripEditionAndVersionSuffixesEquivalence"
+        )
+        for target in "${targets[@]}"; do
+          echo "=== ${target} ==="
+          if go test -run "^$" -fuzz="^${target}\$" -fuzztime={{.FUZZ_TIME}} .; then
+            echo "PASS: ${target}"
+          else
+            echo "FAIL: ${target}"
+            exit_code=1
+          fi
+        done
+        exit $exit_code

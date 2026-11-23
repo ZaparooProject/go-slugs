@@ -32,13 +32,16 @@ tasks:
       - |
         exit_code=0
         targets=(
-          "FuzzSlugifyQueryWords"
-          "FuzzNormalizeOrdinalsEquivalence"
-          "FuzzStripEditionAndVersionSuffixesEquivalence"
+          ".:FuzzSlugifyQueryWords"
+          ".:FuzzNormalizeOrdinalsEquivalence"
+          ".:FuzzStripEditionAndVersionSuffixesEquivalence"
+          "./filetitle:FuzzParse"
         )
-        for target in "${targets[@]}"; do
-          echo "=== ${target} ==="
-          if go test -run "^$" -fuzz="^${target}\$" -fuzztime={{.FUZZ_TIME}} .; then
+        for entry in "${targets[@]}"; do
+          pkg="${entry%%:*}"
+          target="${entry#*:}"
+          echo "=== ${pkg} ${target} ==="
+          if go test -run "^$" -fuzz="^${target}\$" -fuzztime={{.FUZZ_TIME}} "${pkg}"; then
             echo "PASS: ${target}"
           else
             echo "FAIL: ${target}"

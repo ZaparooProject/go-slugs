@@ -33,6 +33,14 @@ title := filetitle.Parse("Super Mario Bros (USA) [!].sfc", false, slugs.MediaTyp
 slugs.Slugify(slugs.MediaTypeGame, title)
 ```
 
+## Ports
+
+`testdata/parity.json` holds this module's output for every string literal in
+its tests: slugs, tokens and query words, filename titles, and list prefixes,
+plus the `width.Fold` table. Ports to other languages test against it. Run
+`task parity` after any change to output or tests; `task test` fails while the
+file is stale.
+
 ## Development
 
 ```sh

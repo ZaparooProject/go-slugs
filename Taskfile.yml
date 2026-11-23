@@ -24,6 +24,11 @@ tasks:
     cmds:
       - go test -run='^$' -bench='{{.BENCH}}' -benchmem -count={{.COUNT}} ./...
 
+  parity:
+    desc: Regenerate testdata/parity.json, the fixtures ports check themselves against
+    cmds:
+      - go test ./internal/parity -run TestFixturesUpToDate -update
+
   fuzz:
     desc: Run fuzz tests (default 30s per test, use FUZZ_TIME to override)
     vars:

@@ -21,6 +21,26 @@ Changing the output of `Slugify` changes how existing media indexes and
 written tokens match, so every change to its output is a breaking change for
 its users.
 
+Two subpackages cover the steps before slugging when a client indexes files
+itself. `filetitle` derives a title from a filename the way Core does, and
+`browseprefix` detects and strips directory-wide list numbering first:
+
+```go
+import "github.com/ZaparooProject/go-slugs/filetitle"
+
+title := filetitle.Parse("Super Mario Bros (USA) [!].sfc", false, slugs.MediaTypeGame)
+// "Super Mario Bros"
+slugs.Slugify(slugs.MediaTypeGame, title)
+```
+
+## Ports
+
+`testdata/parity.json` holds this module's output for every string literal in
+its tests: slugs, tokens and query words, filename titles, and list prefixes,
+plus the `width.Fold` table. Ports to other languages test against it. Run
+`task parity` after any change to output or tests; `task test` fails while the
+file is stale.
+
 ## Development
 
 ```sh

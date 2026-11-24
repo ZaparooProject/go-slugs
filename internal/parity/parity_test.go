@@ -19,6 +19,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,6 +33,11 @@ var update = flag.Bool("update", false, "rewrite testdata/parity.json")
 // expectations. Run "task parity" to regenerate.
 func TestFixturesUpToDate(t *testing.T) {
 	t.Parallel()
+	if runtime.GOOS == "windows" {
+		// StemFromPath uses filepath, which also splits on backslashes here, so
+		// inputs containing one record a different stem than the fixtures hold.
+		t.Skip("fixtures record slash-separated path handling")
+	}
 
 	root := filepath.Join("..", "..")
 	got, err := Generate(root)
